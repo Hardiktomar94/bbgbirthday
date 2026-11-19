@@ -1,0 +1,137 @@
+<html>
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <style>
+            body{
+                background:wheat;
+            }
+            .animation{
+                width:100%;
+                height:auto;
+               
+                display:flex;
+                justify-content:center;
+                align-items:center;
+                animation: moveUp 6s linear forwards;
+                z-index:1;
+                position:absolute;
+            }
+            .video{
+                width:100px;
+                align-items:center;
+                justify-content:center;
+            }
+            
+            @keyframes moveUp{
+                from {
+                    transform:translateY(700px);
+                }
+                to 
+                {transform:translateY(100px);}
+            }
+            
+            .animation2{
+              
+                display:flex;
+                justify-content:center;
+                align-items:center;
+                  
+                z-index:2;
+              
+            }
+            .explosion{
+            width:180px;
+            height:auto;
+            position:absolute;
+            transform: translateY(100px);
+            transform: translateX(0%);
+            z-index:3;
+            top:100px;
+            }
+            #secondvideo{
+                display:none;
+            }
+            
+            .thirdcontainer{
+              
+                
+               
+                display:flex;
+                justify-content:center;
+                align-items:center;
+                
+                left:0%;
+                position: absolute;
+                transform:translateX(50%)
+                z-index:2;
+                transform:translateY(125px);
+                
+            }
+            
+            #Clickbutton{
+                display:none;
+                border-radius:999px;
+                background:;
+                font-family:Oswald;
+                left:40%;
+            }
+            
+            
+          .button1{
+              background:#3333;
+              border-radius:999px;
+              width:70px;
+              height:30px;
+              font-family:Oswald;
+          }
+        </style>
+        
+        <div class="animation">
+            <video class="video" id="firstvideo" autoplay muted loop playsinline>
+                <source src="VN20260730_094056-Picsart-BackgroundRemover..mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="animation2">
+            <video class="explosion" id="secondvideo" src="VID_20260807225843-Picsart-BackgroundRemover.mp4" type="video/mp4" muted ></video>
+        </div>
+        
+        <div class="thirdcontainer" id="Clickbutton">
+            <a href="New file.html"><button class="button1">START</button></a>
+        </div>
+        
+        
+        
+       <script>
+    const video = document.getElementById("firstvideo");
+
+    window.addEventListener("load", () => {
+        video.muted = true;
+        video.play().catch(error => console.log(error));
+    });
+
+    const animation = document.querySelector(".animation");
+    const secondanimation = document.getElementById("secondvideo");
+    const thirdcontainer = document.querySelector(".thirdcontainer");
+
+    animation.addEventListener("animationend", () => {
+        secondanimation.style.display = "block";
+        thirdcontainer.style.display = "block";
+        secondanimation.play().catch(error => console.log(error));
+    });
+
+    animation.addEventListener("animationend", () => {
+        animation.style.display = "none";
+    });
+
+    secondanimation.addEventListener("ended", () => {
+        secondanimation.style.display = "none";
+    });
+</script>
+        
+        
+        
+    </body>
+</html>
