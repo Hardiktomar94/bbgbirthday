@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A Little Story for You</title>
+  <style>
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      color: #43284d;
+      background: linear-gradient(135deg, #ffe2ed, #eee4ff);
+    }
+
+    .card {
+      width: min(100%, 520px);
+      padding: 30px;
+      border-radius: 24px;
+      background: #fffafd;
+      box-shadow: 0 15px 50px #43284d22;
+      text-align: center;
+    }
+
+    .image-frame {
+      height: 230px;
+      margin-bottom: 24px;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #ffe0eb, #e9ddff);
+      color: #795d84;
+    }
+
+    .image-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    h1 {
+      font-size: 30px;
+      line-height: 1.25;
+    }
+
+    p {
+      color: #735e79;
+      line-height: 1.5;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    button {
+      min-width: 120px;
+      padding: 13px 22px;
+      border: 0;
+      border-radius: 999px;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .yes { background: #ff6f9f; }
+    .no { background: #8d65dc; }
+    .video-wrap { margin-top: 24px; }
+    video { width: 100%; border-radius: 16px; background: #241b2b; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="image-frame">
+      <img id="sceneImage" alt="" hidden>
+      <span id="imagePlaceholder">Your picture for this part goes here 💗</span>
+    </div>
+
+    <p id="label"></p>
+    <h1 id="title"></h1>
+    <p id="copy"></p>
+    <div class="buttons" id="buttons"></div>
+
+    <div class="video-wrap" id="videoWrap" hidden>
+      <video id="storyVideo" controls playsinline></video>
+    </div>
+  </main>
+
+  <script>
+    // Put your pictures in an "images" folder and change these paths if needed.
+    const scenes = {
+      start: {
+        label: "Question 1",
+        title: "Yooooooo bbg, did you like it?",
+        copy: "Be honest…",
+        image: "images/question-1.jpg",
+        choices: [
+          { text: "Yes!", next: "coolQuestion", style: "yes" },
+          { text: "No", next: "heartfelt", style: "no" }
+        ]
+      },
+
+      coolQuestion: {
+        label: "Question 2",
+        title: "Aww, really? Now do you think I’m one of the coolest guys you know?",
+        copy: "",
+        image: "images/question-2.jpg",
+        choices: [
+          { text: "YES", next: "reveal", style: "yes" },
+          { text: "NO", next: "coolerQuestion", style: "no" }
+        ]
+      },
+
+      heartfelt: {
+        label: "A tiny confession",
+        title: "Aww… why? I made this with my whole heart 💗",
+        copy: "Will you give my little surprise another chance?",
+        image: "images/question-no.jpg",
+        choices: [
+          { text: "Yes, okay", next: "coolQuestion", style: "yes" },
+          { text: "Still no", next: "goodbye", style: "no" }
+        ]
+      },
+
+      coolerQuestion: {
+        label: "Question 3",
+        title: "Nooo 😭 What would make me one of the coolest guys you know?",
+        copy: "",
+        image: "images/question-3.jpg",
+        choices: [
+          { text: "I’ll tell you", next: "tellMe", style: "yes" },
+          { text: "No idea", next: "tryAgain", style: "no" }
+        ]
+      },
+
+      tellMe: {
+        label: "Your turn",
+        title: "Okay, I’m listening!",
+        copy: "Tell me what would make me cooler 😊",
+        image: "images/tell-me.jpg",
+        choices: [
+          { text: "Start over", next: "start", style: "no" }
+        ]
+      },
+
+      tryAgain: {
+        label: "Challenge accepted",
+        title: "Hehehe, I’ll keep working on it!",
+        copy: "Maybe my surprise can win you over?",
+        image: "images/try-again.jpg",
+        choices: [
+          { text: "Show me", next: "playVideo", style: "yes" },
+          { text: "Start over", next: "start", style: "no" }
+        ]
+      },
+
+      reveal: {
+        label: "A little surprise",
+        title: "Hehehe, I knew it! I have something to show you…",
+        copy: "",
+        image: "images/surprise.jpg",
+        choices: [
+          { text: "Okkay 💖", next: "playVideo", style: "yes" }
+        ]
+      },
+
+      goodbye: {
+        label: "All good",
+        title: "That’s okay 💗",
+        copy: "I still made it with love. Want to see it anyway?",
+        image: "images/its-okay.jpg",
+        choices: [
+          { text: "Okkay", next: "playVideo", style: "yes" },
+          { text: "Start over", next: "start", style: "no" }
+        ]
+      }
+    };
+
+    const image = document.getElementById("sceneImage");
+    const placeholder = document.getElementById("imagePlaceholder");
+    const video = document.getElementById("storyVideo");
+
+    function showImage(path) {
+      image.hidden = true;
+      placeholder.hidden = false;
+
+      image.onload = () => {
+        image.hidden = false;
+        placeholder.hidden = true;
+      };
+
+      image.onerror = () => {
+        image.hidden = true;
+        placeholder.hidden = false;
+      };
+
+      image.src = path;
+    }
+
+    function showScene(name) {
+      if (name === "playVideo") {
+        playVideo();
+        return;
+      }
+
+      const scene = scenes[name];
+      document.getElementById("label").textContent = scene.label;
+      document.getElementById("title").textContent = scene.title;
+
+      const copy = document.getElementById("copy");
+      copy.textContent = scene.copy;
+      copy.hidden = !scene.copy;
+
+      showImage(scene.image);
+      document.getElementById("videoWrap").hidden = true;
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+
+      const buttons = document.getElementById("buttons");
+      buttons.replaceChildren();
+
+      scene.choices.forEach(choice => {
+        const button = document.createElement("button");
+        button.textContent = choice.text;
+        button.className = choice.style;
+        button.onclick = () => showScene(choice.next);
+        buttons.appendChild(button);
+      });
+    }
+
+    function playVideo() {
+      document.getElementById("label").textContent = "Just for you";
+      document.getElementById("title").textContent = "Here you go 💖";
+      document.getElementById("copy").hidden = true;
+      document.getElementById("buttons").replaceChildren();
+
+      showImage("images/video.jpg");
+      document.getElementById("videoWrap").hidden = false;
+
+      // Put your video at videos/surprise.mp4, or change this path.
+      video.src = "videos/surprise.mp4";
+      video.play().catch(() => {});
+    }
+
+    showScene("start");
+  </script>
+</body>
+</html>
